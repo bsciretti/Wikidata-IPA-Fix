@@ -15,14 +15,14 @@ def fix_ipa_transcription(page_id="Q4115189", test_mode=True):
             if "P898" in form.claims:
                 for claim in form.claims["P898"]:
                     old_value = claim.getTarget()
-                    new_value = old_value.replace("'", "ˈ").replace("g", "ɡ")
+                    new_value = old_value.replace("'", "ˈ").replace("g", "ɡ").replace(":","ː")
                     
                     if old_value != new_value:
                         if test_mode and page_id != "Q4115189":
                             print(f"[TEST] Modificherebbe: {page_id_workingon} (forma {form.id}): {old_value} -> {new_value}")
                             time.sleep(1)
                         else:
-                            claim.changeTarget(new_value, summary="[TEST-BOT] Correzione automatica della trascrizione IPA (' → ˈ, g → ɡ)")
+                            claim.changeTarget(new_value, summary="Correzione automatica della trascrizione IPA (' → ˈ, g → ɡ, : → ː)")
                             print(f"Modificato: {page_id} (forma {form.id}): {old_value} -> {new_value}")
                             modified = True
         
@@ -36,7 +36,7 @@ def fix_ipa_transcription(page_id="Q4115189", test_mode=True):
         if prop_id in item.claims:
             for claim in item.claims[prop_id]:
                 old_value = claim.getTarget()
-                new_value = old_value.replace("'", "ˈ").replace("g", "ɡ")
+                new_value = old_value.replace("'", "ˈ").replace("g", "ɡ").replace(":","ː")
                 
                 if old_value != new_value:
                     if test_mode and page_id != "Q4115189":
@@ -52,7 +52,7 @@ def fix_ipa_transcription(page_id="Q4115189", test_mode=True):
 def process_all_ipa_items():
     site = pywikibot.Site("wikidata", "wikidata")
     repo = site.data_repository()
-    query = '''SELECT ?item WHERE { ?item wdt:P898 ?ipa . FILTER(CONTAINS(?ipa, "'") || CONTAINS(?ipa, "g")) }'''  
+    query = '''SELECT ?item WHERE { ?item wdt:P898 ?ipa . FILTER(CONTAINS(?ipa, "'") || CONTAINS(?ipa, "g") || CONTAINS(?ipa, ":")) }'''  
     sparql = SparqlQuery()
     generator = sparql.get_items(query)
     
